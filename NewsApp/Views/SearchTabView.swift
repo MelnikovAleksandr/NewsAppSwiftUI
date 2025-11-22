@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchTabView: View {
     
-    @StateObject var vm = SearchViewModel()
+    @StateObject var vm = SearchViewModel.shared
     
     var body: some View {
         NavigationView {
@@ -17,7 +17,9 @@ struct SearchTabView: View {
                 .overlay(overlayView)
                 .navigationTitle("Search")
         }
-        .searchable(text: $vm.searchQuery)
+        .searchable(text: $vm.searchQuery) {
+            suggestionsView
+        }
         .onChange(of: vm.searchQuery, { oldValue, newValue in
             if newValue.isEmpty {
                 vm.phase = .empty
@@ -41,6 +43,10 @@ struct SearchTabView: View {
         case .empty:
             if !vm.searchQuery.isEmpty {
                 ProgressView()
+            } else if !vm.history.isEmpty {
+                SearchHistoryListView(vm: vm) { newValue in
+                    vm.searchQuery = newValue
+                }
             } else {
                 EmptyPlaceHolderView(text: "Type your query to search", image: Image(systemName: "magnifyingglass"))
             }
@@ -55,7 +61,23 @@ struct SearchTabView: View {
         }
     }
     
+    @ViewBuilder
+    private var suggestionsView: some View {
+        ForEach(["Swift", "BTC", "IOS26", "PS5"], id: \.self) { text in
+            Button {
+                vm.searchQuery = text
+            } label: {
+                Text(text)
+            }
+        }
+        
+    }
+    
     private func search() {
+        let searchQuery = vm.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !searchQuery.isEmpty{
+            vm.addHistory(searchQuery)
+        }
         Task {
             await vm.searchArticles()
         }
