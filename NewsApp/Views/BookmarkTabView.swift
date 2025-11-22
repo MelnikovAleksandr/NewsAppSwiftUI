@@ -10,13 +10,27 @@ import SwiftUI
 struct BookmarkTabView: View {
     
     @EnvironmentObject var bookmarkViewModel: BookmarkViewModel
+    @State var searchText: String = ""
     
     var body: some View {
+        let articles = self.articles
+        
         NavigationView {
-            ArticlesListView(articles: bookmarkViewModel.bookmarks)
-                .overlay(overlayView(isEmpty: bookmarkViewModel.bookmarks.isEmpty))
+            ArticlesListView(articles: articles)
+                .overlay(overlayView(isEmpty: articles.isEmpty))
                 .navigationTitle("Saved Articles")
         }
+        .searchable(text: $searchText)
+    }
+    
+    private var articles: [Article] {
+        if searchText.isEmpty {
+            return bookmarkViewModel.bookmarks
+        }
+        return bookmarkViewModel.bookmarks
+            .filter {
+                $0.title.lowercased().contains(searchText.lowercased()) || $0.descriptionText.lowercased().contains(searchText.lowercased())
+            }
     }
     
     @ViewBuilder
