@@ -38,17 +38,18 @@ class ArticlesViewModel: ObservableObject {
     }
     
     func loadArticles() async {
-        if Task.isCancelled { return }
-        //phase = .empty
-        do {
-            let articles = try await api.fetch(from: fetchDataToken.category)
-            if Task.isCancelled { return }
-            phase = .success(articles)
-        } catch {
-            if Task.isCancelled { return }
-            print("Fetch error - \(error)")
-            phase = .failure(error)
-        }
+        phase = .success(Article.previewData)
+//        if Task.isCancelled { return }
+//        //phase = .empty
+//        do {
+//            let articles = try await api.fetch(from: fetchDataToken.category)
+//            if Task.isCancelled { return }
+//            phase = .success(articles)
+//        } catch {
+//            if Task.isCancelled { return }
+//            print("Fetch error - \(error)")
+//            phase = .failure(error)
+//        }
     }
     
 }

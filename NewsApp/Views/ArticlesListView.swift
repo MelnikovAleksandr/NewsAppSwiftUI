@@ -33,7 +33,9 @@ struct ArticlesListView: View {
 }
 
 #Preview {
+    @Previewable @StateObject var bookmarkViewModel = BookmarkViewModel.shared
     NavigationView {
         ArticlesListView(articles: Article.previewData)
+            .environmentObject(bookmarkViewModel)
     }
 }

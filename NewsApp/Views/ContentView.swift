@@ -14,10 +14,15 @@ struct ContentView: View {
                 .tabItem {
                     Label("News", systemImage: "newspaper")
                 }
+            BookmarkTabView()
+                .tabItem {
+                    Label("Saved", systemImage: "bookmark")
+                }
         }
     }
 }
 
 #Preview {
-    ContentView()
+    @Previewable @StateObject var bookmarkViewModel = BookmarkViewModel.shared
+    ContentView().environmentObject(bookmarkViewModel)
 }
